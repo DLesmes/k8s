@@ -5,4 +5,4 @@ Repo k8s documentation a resources
 
 Fundamentals courses
 
-* 🤓 [Introducción a la Nube](https://platzi.com/cursos/kubernetes/) [[Notes]()][[slides]()]
+* 🤓 [curso de kubernetes](https://platzi.com/cursos/kubernetes/) [[Notes]()][[slides]()]
