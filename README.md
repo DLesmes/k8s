@@ -11,3 +11,4 @@ Fundamentals courses
 # External links
 
 * [Oficial documentation](https://kubernetes.io/docs/home/)
+* [Kubernetes Explained in 6 Minutes | k8s Architecture](https://www.youtube.com/watch?v=TlHvYWVUZyc)
