@@ -2412,3 +2412,324 @@ The combination of PV and PVC provides a robust foundation for data persistence 
 Have you implemented persistent storage in your Kubernetes clusters? What challenges have you faced? Share your experience in the comments! 💬
 
 ---
+
+# DaemonSets and StatefulSets: Specialized Workloads in Kubernetes 🚀
+
+## Summary ��
+
+Proper management of applications in production Kubernetes environments requires knowledge of specialized components like DaemonSets and StatefulSets. These objects offer specific solutions for different use cases, allowing the implementation of robust and scalable architectures. By mastering these concepts, you can optimize the deployment of applications that require high availability or data persistence. 🎯
+
+## What are DaemonSets and StatefulSets in Kubernetes? 🤔
+
+DaemonSets and StatefulSets are Kubernetes objects designed for specific use cases in production environments. Each has particular characteristics that make them suitable for different situations, especially when predictable behavior is required regarding pod execution and persistence.
+
+### DaemonSet 🎯
+A DaemonSet ensures that all nodes (or a specific set of nodes) run a copy of a pod. When nodes are added to the cluster, a DaemonSet pod is automatically added to them. The main characteristic is that each replica configured in a DaemonSet runs on one node at a time. This means that if we configure 3 or 4 replicas, we would need the same number of nodes.
+
+### StatefulSet ��
+On the other hand, a StatefulSet is designed for applications that require persistence and stable identifiers. Unlike regular Deployments, StatefulSets maintain a persistent identity for each pod, which is useful for stateful applications like databases.
+
+## Understanding the 3 Types of Workloads ��
+
+### 1. DEPLOYMENT 📌 For normal web applications
+✅ **Use**: Stateless applications (APIs, websites)
+✅ **Advantage**: Easy to scale and manage
+❌ **Limitation**: Pods are interchangeable, lose data when restarting
+💡 **Example**: A REST API that doesn't store important data
+
+### 2. STATEFULSET 📌 For applications that NEED to store data
+✅ **Use**: Databases, stateful applications
+✅ **Advantage**: Each pod has its own permanent storage
+✅ **Extra**: Each pod has a unique and stable DNS name (`<pod-name>.<service-name>.<namespace>.svc.cluster.local`)
+�� **Example**: MySQL, PostgreSQL, MongoDB
+
+### 3. DAEMONSET 📌 For services that must be on ALL nodes
+✅ **Use**: Monitoring, logging, system services
+✅ **Advantage**: Runs automatically on each server in the cluster
+✅ **Auto-scale**: If you add a server, it installs automatically
+💡 **Example**: Monitoring agent like Prometheus
+
+## How to Create a DaemonSet in Kubernetes? 🛠️
+
+To create a DaemonSet, we need to define its specification in a YAML file. The structure is similar to other Kubernetes objects, with some particularities:
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-daemonset
+spec:
+  selector:
+    matchLabels:
+      app: nginxApp
+  template:
+    metadata:
+      labels:
+        app: nginxApp
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+```
+
+In this example, we define a DaemonSet with a pod that runs Nginx. It's important to define the resources that our pods will use, as shown in the resources section. This establishes that the pod will initially be allocated 64Mi of memory and 250m of CPU, with limits of 128Mi and 500m respectively.
+
+To create this DaemonSet, we execute:
+
+```bash
+kubectl apply -f daemonset.yaml
+```
+
+And we can verify its creation with:
+
+```bash
+kubectl get ds
+```
+
+## How to Implement StatefulSets with Persistent Storage? 💾
+
+StatefulSets are generally used together with persistent volumes (PV) and persistent volume claims (PVC) to maintain application state. Before creating a StatefulSet, we need to configure these storage resources:
+
+### First, we create a PV and PVC:
+```bash
+kubectl apply -f pv-pvc.yaml
+```
+
+### Then, we create the StatefulSet:
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-sts
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: nginx-data
+          mountPath: /var/www/html
+  volumeClaimTemplates:
+  - metadata:
+      name: nginx-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 1Gi
+```
+
+An important characteristic of StatefulSets is that they require a "headless" service (ClusterIP: None). This service allows each StatefulSet pod to have a stable DNS address, which facilitates communication between pods.
+
+When creating this StatefulSet, you'll notice that pods are created with predictable names:
+- `nginx-sts-0`
+- `nginx-sts-1`
+
+## Use Cases and Limitations of DaemonSets and StatefulSets ��
+
+### Use Cases for DaemonSets:
+- **Monitoring agents**: like Prometheus, which need to run on each node ��
+- **Log collection**: tools like Logstash or Fluentd 📝
+- **Network proxies**: like kube-proxy 🌐
+- **Storage daemons**: that need to run on each node ��
+
+### Use Cases for StatefulSets:
+- **Databases**: MySQL, PostgreSQL (for development, not always recommended for production) 🗄️
+- **Distributed systems**: Kafka, Elasticsearch 🔄
+- **Applications that require persistent identities** ��
+
+### Limitations:
+Both DaemonSets and StatefulSets have important restrictions to consider:
+
+- **No immediate rollbacks** like Deployments ❌
+- **Can only scale up or down one pod at a time** 📈
+- This can affect user experience depending on the application domain ⚠️
+
+It's important to understand these limitations to determine if these objects are suitable for your specific use case or if it would be better to use other alternatives like Deployments.
+
+## Quick Decision Guide 🤔
+
+### Which One to Use? - Quick Guide
+
+**Does my application store important data?**
+- NO → **DEPLOYMENT**
+- YES → **STATEFULSET**
+
+**Do I need something to run on EVERY server?**
+- YES → **DAEMONSET**
+
+## Comparative Table 📊
+
+| Feature | Deployment | StatefulSet | DaemonSet |
+|---------|------------|-------------|-----------|
+| **Data** | Gets lost | Maintained | Depends |
+| **Scaling** | Manual | Manual | Automatic |
+| **Identity** | Interchangeable | Unique | One per node |
+| **Typical Use** | Web apps | Databases | Agents/Monitoring |
+
+## Real-World Examples ��
+
+### DEPLOYMENT:
+- E-commerce website 🛒
+- User API 👥
+- React/Vue frontend ��
+
+### STATEFULSET:
+- MySQL database 🗄️
+- Queue system like Kafka 📨
+- Elasticsearch cluster 🔍
+
+### DAEMONSET:
+- Antivirus on each server 🛡️
+- Log collector 📝
+- Backup agent 💾
+
+## Advanced Configurations 🚀
+
+### DaemonSet with Node Selectors:
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: monitoring-agent
+spec:
+  selector:
+    matchLabels:
+      app: monitoring
+  template:
+    metadata:
+      labels:
+        app: monitoring
+    spec:
+      nodeSelector:
+        monitoring: "true"
+      containers:
+      - name: monitoring
+        image: prometheus/node-exporter
+```
+
+### StatefulSet with Headless Service:
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-headless
+spec:
+  clusterIP: None
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-sts
+spec:
+  serviceName: nginx-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+```
+
+## Best Practices 💡
+
+### For DaemonSets:
+- Use for system-level services only
+- Implement proper resource limits
+- Use node selectors for targeted deployment
+- Monitor resource usage across nodes
+
+### For StatefulSets:
+- Always use persistent storage
+- Implement proper backup strategies
+- Use stable network identities
+- Plan for ordered scaling
+
+### General Guidelines:
+- Choose the right workload type for your use case
+- Implement proper monitoring and logging
+- Use resource limits and requests
+- Test scaling and failure scenarios
+
+## Troubleshooting Common Issues 🔧
+
+### DaemonSet Issues:
+```bash
+# Check DaemonSet status
+kubectl get daemonset
+
+# Check pod distribution
+kubectl get pods -l app=nginxApp -o wide
+
+# Check node labels
+kubectl get nodes --show-labels
+```
+
+### StatefulSet Issues:
+```bash
+# Check StatefulSet status
+kubectl get statefulset
+
+# Check pod order and naming
+kubectl get pods -l app=nginx
+
+# Check persistent volumes
+kubectl get pvc
+```
+
+## Monitoring and Management 📈
+
+### Commands for Monitoring:
+```bash
+# Check workload status
+kubectl get all
+
+# Monitor scaling events
+kubectl describe daemonset <name>
+kubectl describe statefulset <name>
+
+# Check resource usage
+kubectl top pods
+```
+
+## Conclusion 🎉
+
+The power of Kubernetes lies in its ability to decouple components and create ephemeral pods when necessary, providing specific solutions for different deployment scenarios through its various objects and resources.
+
+Understanding when and how to use DaemonSets and StatefulSets is crucial for building robust, scalable, and maintainable applications in Kubernetes. Each workload type serves a specific purpose and choosing the right one can make the difference between a successful deployment and a problematic one. 🌟
+
+Have you used DaemonSets or StatefulSets in your projects? What other use cases do you think would be suitable for these objects? Share your experience in the comments! 💬
