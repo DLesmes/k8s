@@ -1380,3 +1380,290 @@ The next step in our learning will be discovering how to integrate these ConfigM
 Proper management of configurations and secrets is fundamental for maintaining secure and easily maintainable applications in Kubernetes. We encourage you to experiment by creating your own ConfigMaps and Secrets, integrating them into your applications, and exploring more advanced solutions for production environments with high security requirements. 🌟
 
 Remember that security is not just about protecting data, but also about implementing proper practices and using the right tools for each scenario. Start with ConfigMaps and Secrets, then evolve to more sophisticated solutions as your security requirements grow! 🔐
+
+---
+
+# Kubernetes Network Model: Pods and Services 🌐
+
+## Summary 📋
+
+The Kubernetes network represents one of the most sophisticated components of its architecture, allowing pods and services to communicate seamlessly regardless of where they are physically hosted. This transparent communication capability is fundamental for building robust and scalable distributed applications, and understanding how this network model works helps us solve problems and optimize our implementations. 🎯
+
+## How Does the Network Model Work in Kubernetes? ⚙️
+
+The Kubernetes network model is based on an apparently simple but technically complex concept: **flat networking between pods**. This feature allows each pod to communicate directly with any other pod in the cluster, even if they are on different nodes or workers.
+
+This design is based on three main rules:
+
+### 1. Direct Node Communication 🔗
+All nodes must be able to connect to each other without needing Network Address Translation (NAT). This means that workers or nodes are on the same network and have direct communication between them.
+
+### 2. Direct Pod Communication ��
+Communication must be direct between pods. This transparency allows a pod in one namespace (for example, frontend) to communicate with another pod in a different namespace (like backend) using simply IP addresses or service names.
+
+### 3. Shared Network Segment 🌐
+Pods and services share the same network segment. This configuration facilitates communication between services and the groups of pods associated with deployments or other Kubernetes objects.
+
+## Key Components of Networking in Kubernetes 🏗️
+
+The Kubernetes network works thanks to several components that work coordinately:
+
+### Container Network Interface (CNI) 🔌
+It's an interface that allows using different plugins to manage the network. Among the most popular options stand out:
+
+- **Calico** 🦔: Highly recommended in the community for its ease of learning and adaptability to multiple use cases.
+- **Flannel** 🧶: Offers similar capabilities for network configuration, although it presents some limitations in security aspects.
+
+### kube-proxy 🌐
+This component, which we've talked about previously, uses IPTables (Linux mechanism) for request routing. When someone tries to access a pod, kube-proxy:
+
+1. **Receives the request** 📥
+2. **Redirects it to the appropriate pods of the service** 🔄
+3. **Updates routes in IPTables when there are changes** ��
+
+### CoreDNS ��
+It's the component responsible for service discovery, allowing the use of service names to reference specific groups of pods or services within the cluster.
+
+## The OSI and TCP/IP Model in Kubernetes 📊
+
+From a technical perspective, Kubernetes uses the practical TCP/IP model (based on the theoretical OSI model):
+
+- **Pods communicate using layer 3 (network)**, employing routing and IP protocol.
+- **Services use upper layer protocols (application and transport)**, taking advantage of TCP, UDP, and load balancing mechanisms.
+
+## Why is the Network Model Important in Kubernetes? ��
+
+The sophisticated Kubernetes network model is what allows our distributed applications to work in a coordinated manner. A Kubernetes cluster can run in various environments:
+
+- **In the cloud** ☁️
+- **In on-premise environments** 🏢
+- **In virtual machines within the same host** 💻
+
+In all these cases, the Kubernetes network ensures that components can communicate properly, maintaining the availability, fault tolerance, and resilience of our applications.
+
+## Service Discovery and Its Importance 🔍
+
+CoreDNS plays a fundamental role in the Kubernetes architecture, handling service discovery between services and associated pod groups. This allows any component to be reached both internally and externally, without worrying about knowing the exact IP addresses of each element.
+
+## Network Architecture Deep Dive 🏛️
+
+### Pod Network Model ��
+```yaml
+# Example: Pod with network configuration
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+      protocol: TCP
+```
+
+### Service Network Model ��
+```yaml
+# Example: Service exposing pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+spec:
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+```
+
+## Network Policies and Security 🔒
+
+### Network Policy Example:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+```
+
+### Allowing Specific Traffic:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-web-traffic
+spec:
+  podSelector:
+    matchLabels:
+      app: web
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend
+    ports:
+    - protocol: TCP
+      port: 80
+```
+
+## Practical Network Commands and Tools 🛠️
+
+### Network Troubleshooting Commands:
+```bash
+# Check pod network connectivity
+kubectl exec -it <pod-name> -- ping <target-pod-ip>
+
+# Check service endpoints
+kubectl get endpoints <service-name>
+
+# Check network policies
+kubectl get networkpolicies
+
+# Check DNS resolution
+kubectl exec -it <pod-name> -- nslookup <service-name>
+
+# Check pod network configuration
+kubectl describe pod <pod-name>
+```
+
+### Network Debugging Tools:
+```bash
+# Install network debugging tools in a pod
+kubectl run debug-pod --image=nicolaka/netshoot --rm -it
+
+# Check network interfaces
+kubectl exec -it debug-pod -- ip addr
+
+# Check routing table
+kubectl exec -it debug-pod -- ip route
+
+# Check DNS configuration
+kubectl exec -it debug-pod -- cat /etc/resolv.conf
+```
+
+## Network Performance and Optimization 📈
+
+### Best Practices for Network Performance:
+- **Use appropriate CNI plugins** for your use case
+- **Implement network policies** for security
+- **Monitor network metrics** regularly
+- **Optimize service mesh** configurations if using Istio/Linkerd
+- **Use appropriate service types** (ClusterIP vs NodePort vs LoadBalancer)
+
+### Network Monitoring:
+```bash
+# Check network metrics
+kubectl top pods
+
+# Monitor network policies
+kubectl get networkpolicies --all-namespaces
+
+# Check service endpoints
+kubectl get endpoints --all-namespaces
+```
+
+## Common Network Issues and Solutions ��
+
+### Issue 1: Pods Can't Communicate
+```bash
+# Check if pods are in the same namespace
+kubectl get pods --all-namespaces
+
+# Verify service configuration
+kubectl describe service <service-name>
+
+# Check network policies
+kubectl get networkpolicies
+```
+
+### Issue 2: DNS Resolution Problems
+```bash
+# Check CoreDNS pods
+kubectl get pods -n kube-system -l k8s-app=kube-dns
+
+# Check CoreDNS logs
+kubectl logs -n kube-system -l k8s-app=kube-dns
+
+# Test DNS resolution
+kubectl exec -it <pod-name> -- nslookup kubernetes.default
+```
+
+### Issue 3: Service Not Accessible
+```bash
+# Check service endpoints
+kubectl get endpoints <service-name>
+
+# Verify pod labels match service selector
+kubectl get pods --show-labels
+kubectl describe service <service-name>
+```
+
+## Network Security Considerations 🛡️
+
+### Security Best Practices:
+- **Implement network policies** to restrict traffic
+- **Use service mesh** for advanced security features
+- **Encrypt traffic** between services
+- **Monitor network traffic** for anomalies
+- **Regular security audits** of network configurations
+
+### Network Policy Examples:
+```yaml
+# Deny all traffic by default
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+```
+
+## Advanced Networking Features 🚀
+
+### Service Mesh Integration:
+- **Istio**: Advanced traffic management and security
+- **Linkerd**: Lightweight service mesh
+- **Consul Connect**: Service mesh with service discovery
+
+### Multi-Cluster Networking:
+- **Cluster Federation**: Connect multiple Kubernetes clusters
+- **Cross-cluster service discovery**: Access services across clusters
+- **Global load balancing**: Distribute traffic across clusters
+
+## Network Capacity and Limits 📊
+
+### Default Network Limits:
+- **Pods per node**: 110 (configurable)
+- **Services per cluster**: 10,000
+- **Endpoints per service**: 1,000
+- **Network policies per namespace**: 1,000
+
+### Scaling Considerations:
+- **Monitor network performance** as cluster grows
+- **Implement network segmentation** for large clusters
+- **Use appropriate CNI plugins** for scale requirements
+- **Consider service mesh** for complex networking needs
+
+## Conclusion 🎉
+
+Although these concepts may seem highly theoretical, they are fundamental for performing effective troubleshooting and understanding the behavior of pods and services within a Kubernetes cluster.
+
+Understanding the network in Kubernetes constitutes a solid foundation for any engineer working with this technology, allowing them to design more robust architectures and solve connectivity problems efficiently. 🌟
+
+The Kubernetes network model is the backbone that enables all the sophisticated features we've learned about - from simple pod-to-pod communication to complex service mesh architectures. Mastering these concepts will help you build more reliable, secure, and performant applications. 🚀
+
+Have you experienced any situation where knowledge of the Kubernetes network model helped you solve a problem? Do you know what the default maximum capacity is in the Kubernetes network layer? Share your experiences in the comments! 💬
