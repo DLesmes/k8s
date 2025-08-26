@@ -1091,3 +1091,292 @@ The combination of Services and Ingress provides a comprehensive solution for ex
 I invite you to experiment by creating your own deployment with a different name and configuring a custom Ingress for it. Share your results and learnings in the comments section! 🚀
 
 Remember that mastering Services and Ingress is essential for building production-ready applications in Kubernetes, as they form the foundation of how your applications communicate with the outside world. 🌐
+
+---
+
+# ConfigMaps and Secrets: Configuration and Sensitive Data 🔐
+
+## Summary 📋
+
+ConfigMaps and Secrets are fundamental for protecting your application configuration in Kubernetes. Not implementing them properly could expose sensitive information and compromise the security of your deployments. These two resources allow you to separate configuration from code, following modern development best practices, and add additional security layers that every systems administrator should know. 🛡️
+
+## What are ConfigMaps and Secrets in Kubernetes? 🤔
+
+ConfigMaps and Secrets are Kubernetes objects that allow storing configuration information separate from the application code. However, they have different purposes and distinct security levels.
+
+**ConfigMaps** are designed to store non-sensitive configuration data in key-value pair format. This data is stored in plain text and is easily accessible. On the other hand, **Secrets** are specifically designed to store confidential information such as passwords, OAuth tokens, SSH keys, and other sensitive data that should not be exposed. 🔒
+
+To experiment with these objects, we can use the files provided in the `08-configs-secrets` folder of our project:
+
+- A file to create a ConfigMap
+- A file to create a Secret
+- A README.md file with instructions and commands
+
+## How to Create and Manage ConfigMaps? 📝
+
+To create a ConfigMap declaratively, first we need to review the file structure. In the `autconfig.yaml` example, we find:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: autconfig
+data:
+  api_url: "https://api.example.com"
+```
+
+This file defines an object of type ConfigMap called "autconfig" that contains a URL as configuration data. To apply it in our cluster, we execute:
+
+```bash
+kubectl apply -f autconfig.yaml
+```
+
+Once created, we can verify its existence and content with the following commands:
+
+```bash
+kubectl get configmap
+kubectl describe configmap autconfig
+```
+
+The `describe` command will show us the value in plain text, confirming that ConfigMaps store information without encryption. This is suitable for values such as:
+
+- **Execution environments** (development, staging, production) ��️
+- **Non-sensitive external service URLs** ��
+- **Log levels** (debug, info, error) 📊
+
+A good exercise is to create a ConfigMap with different types of variables like strings, integers, or other types to configure your application.
+
+## How to Implement Secrets for Sensitive Information? ��
+
+Unlike ConfigMaps, Secrets add an additional security layer by encoding values in base64. To create a Secret imperatively from the command line:
+
+```bash
+kubectl create secret generic autsecret --from-literal=client_id=myclientid --from-literal=client_secret=secret
+```
+
+This command creates a Secret called "autsecret" with two values: `client_id` and `client_secret`. Although we pass these values in plain text from the console (which is not a good practice in production), Kubernetes will store them encoded.
+
+To verify the Secret creation:
+
+```bash
+kubectl get secret
+kubectl describe secret autsecret
+```
+
+The `describe` command will show that we have "Opaque" type information and will indicate the size in bytes of each value, but will not directly show the data. To view or edit these values:
+
+```bash
+kubectl edit secret autsecret
+```
+
+This command will open an editor where we'll see the base64 encoded values. If we need to decode these values, we can use online tools or the `base64` command in the terminal.
+
+It's important to note that although Secrets encode data in base64, this doesn't provide real encryption, only obfuscation. For environments with higher security requirements, it's recommended to consider solutions such as:
+
+- **HashiCorp Vault** 🏦
+- **External Secrets with AWS Secrets Manager** ☁️
+
+## Best Practices for Configuration and Secrets Management 💡
+
+Proper implementation of ConfigMaps and Secrets offers several benefits for your application architecture and security:
+
+### Configuration Decoupling 🔗
+Allows completely separating configuration from application code, facilitating maintenance and changes.
+
+### Multi-Environment Support 🌍
+You can create different ConfigMaps for each environment (development, testing, production) without changing the code.
+
+### Secret Rotation 🔄
+Secrets can be updated and rotated regularly without needing to rebuild and redeploy applications.
+
+### Granular Access Control 🔐
+Kubernetes allows defining access policies to determine which users or applications can access which secrets.
+
+### External Solution Integration 🔗
+For greater security, you can integrate solutions like HashiCorp Vault or AWS Secrets Manager through External Secrets.
+
+## When to Use Each Type of Object? 🎯
+
+### ConfigMaps: For non-sensitive configuration data that can be in plain text
+- **Environment variables** 🌍
+- **Non-confidential URLs** 🌐
+- **Logging configuration** 📊
+- **Application parameters** ⚙️
+
+### Secrets: Exclusively for sensitive information
+- **API keys** ��
+- **Passwords** ��
+- **Authentication tokens** 🎫
+- **SSL certificates** 📜
+
+## Practical Examples and Commands 📝
+
+### Creating ConfigMaps:
+
+```bash
+# From file
+kubectl apply -f configmap.yaml
+
+# From literal values
+kubectl create configmap my-config --from-literal=key1=value1 --from-literal=key2=value2
+
+# From file content
+kubectl create configmap my-config --from-file=config.properties
+
+# From directory
+kubectl create configmap my-config --from-file=./config/
+```
+
+### Creating Secrets:
+
+```bash
+# From literal values
+kubectl create secret generic my-secret --from-literal=username=admin --from-literal=password=secret123
+
+# From file
+kubectl create secret generic my-secret --from-file=./secrets/
+
+# From file content
+kubectl create secret generic my-secret --from-file=username=./username.txt --from-file=password=./password.txt
+```
+
+### Managing ConfigMaps and Secrets:
+
+```bash
+# List all ConfigMaps
+kubectl get configmaps
+
+# List all Secrets
+kubectl get secrets
+
+# Describe ConfigMap
+kubectl describe configmap my-config
+
+# Describe Secret
+kubectl describe secret my-secret
+
+# Edit ConfigMap
+kubectl edit configmap my-config
+
+# Edit Secret
+kubectl edit secret my-secret
+
+# Delete ConfigMap
+kubectl delete configmap my-config
+
+# Delete Secret
+kubectl delete secret my-secret
+```
+
+## Security Considerations 🔒
+
+### ConfigMaps Security:
+- ✅ Suitable for non-sensitive data
+- ❌ Not encrypted (stored in plain text)
+- ⚠️ Don't store passwords, keys, or tokens
+- 📝 Use for configuration parameters, URLs, environment names
+
+### Secrets Security:
+- ✅ Base64 encoded (not encrypted)
+- ⚠️ Not suitable for highly sensitive data in production
+- 🔐 Consider external secret management solutions
+- 🔄 Implement regular secret rotation
+
+## Advanced Secret Management Solutions 🚀
+
+### HashiCorp Vault:
+```bash
+# Install Vault
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm install vault hashicorp/vault
+
+# Configure External Secrets Operator
+kubectl apply -f https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/samples/secretstore.yaml
+```
+
+### AWS Secrets Manager:
+```yaml
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: aws-secret-store
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: us-west-2
+```
+
+## Using ConfigMaps and Secrets in Pods 🐳
+
+### As Environment Variables:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: my-container
+    image: nginx
+    env:
+    - name: API_URL
+      valueFrom:
+        configMapKeyRef:
+          name: my-config
+          key: api_url
+    - name: PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: my-secret
+          key: password
+```
+
+### As Volumes:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: my-container
+    image: nginx
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/config
+    - name: secret-volume
+      mountPath: /etc/secrets
+  volumes:
+  - name: config-volume
+    configMap:
+      name: my-config
+  - name: secret-volume
+    secret:
+      secretName: my-secret
+```
+
+## Best Practices Summary ��
+
+### Do's ✅:
+- Use ConfigMaps for non-sensitive configuration
+- Use Secrets for sensitive data
+- Implement proper RBAC for access control
+- Use external secret management for production
+- Regularly rotate secrets
+- Use meaningful names and labels
+
+### Don'ts ❌:
+- Store sensitive data in ConfigMaps
+- Commit secrets to version control
+- Use base64 encoding as real encryption
+- Share secrets across namespaces unnecessarily
+- Use default service accounts for secret access
+
+## Conclusion 🎉
+
+The next step in our learning will be discovering how to integrate these ConfigMaps and Secrets with our Pods and Deployments so that our applications can use these configurations. This involves understanding how to mount these resources as environment variables or as volumes within containers.
+
+Proper management of configurations and secrets is fundamental for maintaining secure and easily maintainable applications in Kubernetes. We encourage you to experiment by creating your own ConfigMaps and Secrets, integrating them into your applications, and exploring more advanced solutions for production environments with high security requirements. 🌟
+
+Remember that security is not just about protecting data, but also about implementing proper practices and using the right tools for each scenario. Start with ConfigMaps and Secrets, then evolve to more sophisticated solutions as your security requirements grow! 🔐
