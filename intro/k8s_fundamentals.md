@@ -588,3 +588,260 @@ The choice between imperative and declarative approaches depends on your specifi
 Have you worked with Kubernetes using either of these approaches? Which do you prefer and why? Share your experience and explore how you can improve your implementations by combining both methodologies! 🚀
 
 ---
+
+# Pods, ReplicaSets, and Deployments 📦
+
+## Summary 📋
+
+How to access resources in Kubernetes with Kubectl? When working with Kubernetes, the Kubectl command is our gateway to interact with resources. To begin, it's fundamental to see how to access pods and understand the core building blocks of Kubernetes applications. This class covers the essential concepts of Pods, ReplicaSets, and Deployments - the foundation of any Kubernetes application. 🎯
+
+## How to Access Resources in Kubernetes with Kubectl? 🚀
+
+When working with Kubernetes, the Kubectl command is our gateway to interact with resources. To begin, it's fundamental to see how to access pods:
+
+### Get Pods: 
+Execute `kubectl get pods`. If you don't specify a namespace, the default namespace will be used.
+
+Now, what do we know about namespaces?
+
+### Validate Namespaces: 
+Use `kubectl get namespaces` to see existing namespaces, which include default, kube-node-lease, kube-public, and kube-system.
+
+These namespaces, especially those starting with "kube", are for internal Kubernetes use. But if you want to create new namespaces:
+
+### Create Namespace: 
+Implement `create namespace` or its short form `create ns`.
+
+## How to Manage Pods Efficiently? 🚀
+
+When working with pods, two approaches are handled: imperative and declarative. These approaches offer different ways to create and manage pods, and we want to share some examples.
+
+### Imperative Approach with Kubectl 🚀
+
+To illustrate pod creation in an imperative way, we'll use CLI (Command Line Interface) commands:
+
+```bash
+kubectl run nginx --image=nginx --restart=Never --port=80
+```
+
+When executing this, Kubernetes assumes several default parameters, such as IP address and container ID. Subsequently, we validate with:
+
+### Describe a Pod: 
+`kubectl describe pod <pod-name>`. Here you'll see conditions and states of the pod.
+
+### Declarative Approach with YAML Files 📝
+
+Kubernetes can also be managed declaratively with YAML files that detail specific configurations. These files are especially useful for automation and infrastructure as code management.
+
+## How to Scale Applications with ReplicaSets? 📈
+
+As you try to scale applications, ReplicaSets come into play. These are responsible for managing multiple instances of pods.
+
+### Creating a ReplicaSet 🏗️
+
+To create a ReplicaSet, use a YAML file with the following structure:
+
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: example-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+```
+
+Implement with:
+
+```bash
+kubectl apply -f replicasets.yaml
+```
+
+### Verification and Maintenance 🔧
+
+- **Observe ReplicaSets**: `kubectl get replicasets`
+- **Delete a Pod**: When you delete it, the ReplicaSet automatically creates a new one to maintain the desired number of replicas
+
+## What Role Do Deployments Play in Kubernetes? 🚀
+
+Deployments act as the top layer, managing ReplicaSets and facilitating control over applications.
+
+### Benefits of a Deployment 🎯
+
+A deployment allows:
+
+- **Continuous updates**: Implement new versions without interrupting service
+- **Automatic rollback**: Revert failed updates
+- **Rolling updates**: Update pods gradually without downtime
+- **Version control**: Track different versions of your application
+
+### Creating a Deployment 🏗️
+
+Use the following YAML:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-deployment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: hello-app
+  template:
+    metadata:
+      labels:
+        app: hello-app
+    spec:
+      containers:
+      - name: hello-app
+        image: google-samples/hello-app:1.0
+        ports:
+        - containerPort: 8080
+```
+
+Implement with:
+
+```bash
+kubectl apply -f deployment.yaml
+```
+
+### Image Updates 🔄
+
+To update the image to a newer version, use:
+
+```bash
+kubectl set image deployment/example-deployment hello-app=google-samples/hello-app:2.0
+```
+
+### Validation and Monitoring 📊
+
+- **View counters in deployments and ReplicaSets**: `kubectl get deployments` and `kubectl get replicasets`
+- **Undo updates**: `kubectl rollout undo deployment/example-deployment`
+- **Check rollout status**: `kubectl rollout status deployment/example-deployment`
+- **View rollout history**: `kubectl rollout history deployment/example-deployment`
+
+## How to Expose Traffic to Kubernetes? 🔄
+
+To manage traffic between our local machine and pods, port-forward commands are used:
+
+```bash
+kubectl port-forward deployment/example-deployment 8080:8080
+```
+
+This redirects traffic to port 8080 of the deployment, allowing you to verify in the browser with localhost:8080.
+
+## Understanding the Hierarchy: Pods → ReplicaSets → Deployments 📊
+
+### Pods (The Basic Unit) 📦
+- **What they are**: The smallest deployable units in Kubernetes
+- **Purpose**: Run one or more containers
+- **Lifecycle**: Can be created, updated, and deleted
+- **Direct management**: Not recommended for production
+
+### ReplicaSets (Ensuring Availability) 🔄
+- **What they are**: Ensures a specified number of pod replicas are running
+- **Purpose**: Maintain pod availability and scaling
+- **Self-healing**: Automatically replaces failed pods
+- **Scaling**: Can scale up or down based on demand
+
+### Deployments (Production-Ready Management) 🚀
+- **What they are**: Higher-level abstraction that manages ReplicaSets
+- **Purpose**: Provide declarative updates for pods and ReplicaSets
+- **Rolling updates**: Update applications without downtime
+- **Rollback capability**: Revert to previous versions if needed
+
+## Practical Examples and Commands 📝
+
+### Working with Pods:
+```bash
+# Create a simple pod
+kubectl run my-pod --image=nginx
+
+# Get pod details
+kubectl describe pod my-pod
+
+# Get pod logs
+kubectl logs my-pod
+
+# Delete a pod
+kubectl delete pod my-pod
+```
+
+### Working with ReplicaSets:
+```bash
+# Create ReplicaSet from file
+kubectl apply -f replicaset.yaml
+
+# Scale ReplicaSet
+kubectl scale replicaset example-replicaset --replicas=5
+
+# Get ReplicaSet details
+kubectl describe replicaset example-replicaset
+```
+
+### Working with Deployments:
+```bash
+# Create deployment from file
+kubectl apply -f deployment.yaml
+
+# Scale deployment
+kubectl scale deployment example-deployment --replicas=6
+
+# Update deployment image
+kubectl set image deployment/example-deployment container-name=new-image:tag
+
+# Rollback deployment
+kubectl rollout undo deployment/example-deployment
+
+# Check deployment status
+kubectl rollout status deployment/example-deployment
+```
+
+## Best Practices 💡
+
+### For Pods:
+- Don't create pods directly in production
+- Use Deployments instead
+- Always specify resource limits and requests
+- Use health checks (liveness and readiness probes)
+
+### For ReplicaSets:
+- Use Deployments instead of managing ReplicaSets directly
+- ReplicaSets are managed automatically by Deployments
+- Focus on the desired state rather than manual scaling
+
+### For Deployments:
+- Use meaningful names and labels
+- Implement proper resource limits
+- Use rolling update strategy
+- Monitor rollout status
+- Keep deployment history for rollbacks
+
+## Conclusion 🎉
+
+I invite everyone to share what they think about this Kubernetes workflow and how they could incorporate it into their future projects. These concepts are just the beginning for mastering application deployment and management in the cloud.
+
+The combination of Pods, ReplicaSets, and Deployments provides a robust foundation for running applications in Kubernetes. Understanding how these components work together is essential for building scalable, reliable, and maintainable applications in the cloud. 🌟
+
+Remember:
+- **Pods** are the basic building blocks
+- **ReplicaSets** ensure availability and scaling
+- **Deployments** provide production-ready management with rolling updates and rollbacks
+
+Continue exploring and practicing with these concepts to build your confidence in managing Kubernetes applications! 🚀
+
+---
