@@ -2056,3 +2056,359 @@ Remember that choosing the right service type depends on your specific requireme
 - **ExternalName** for external service integration
 
 Mastering these service types will help you build robust, scalable, and maintainable applications in Kubernetes! 🚀
+
+---
+
+# Persistent Volumes (PV) and Persistent Volume Claims (PVC) 💾
+
+## Summary 📋
+
+Persistent storage in Kubernetes is fundamental for preserving critical data in production and development scenarios. When working with applications that require maintaining information, it's essential to implement properly configured persistent volumes. The concepts of PV (Persistent Volume) and PVC (Persistent Volume Claim) are essential to ensure that our applications maintain data integrity even when pods restart or are deleted. ��️
+
+## Why is it Crucial to Implement Persistent Storage in Kubernetes? 🎯
+
+When we run applications in Kubernetes without properly configuring persistent storage through PV and PVC, we risk losing all our data. This is especially critical in production environments where data loss can have devastating consequences.
+
+While it's true that in production environments it's not recommended to manage databases directly in Kubernetes (preferring managed services like AWS RDS), in development environments implementing databases within the cluster can generate significant savings. This avoids maintaining external services like RDS, RabbitMQ, or other storage services that generate constant costs, especially when not used continuously during development.
+
+## Differences Between Stateless and Stateful Applications 🔄
+
+Before diving into PV and PVC, it's important to understand two fundamental concepts in application design:
+
+### Stateless (No State) 📤
+Each request is independent and contains all the necessary information to be processed. It doesn't require accessing previously stored data to resolve the request. A typical example is a REST API where each request includes in the body all the data necessary to generate a response.
+
+### Stateful (With State) ��
+These applications require accessing persistent data to process requests. When a request with limited information is received, the backend must query a database or other storage system to obtain additional information and generate an appropriate response.
+
+The main difference between both approaches lies in the need to access persistent data, and it's here where the concepts of PV and PVC become vitally important in the Kubernetes context.
+
+## How Do PV and PVC Work in Kubernetes? ��
+
+We can understand PV and PVC through a simple metaphor: a data warehouse and a key to access it.
+
+### Persistent Volume (PV) 🏢
+Represents the physical data warehouse, the volume where our information is located.
+
+### Persistent Volume Claim (PVC) 🔑
+Acts as the key that allows pods to access the data warehouse. It's a storage request made by a pod.
+
+This architecture offers an abstraction layer that allows developers not to worry about the specific details of the underlying storage, focusing solely on requesting the space they need through PVCs.
+
+## Storage Types (Storage Classes) ��
+
+Kubernetes offers different storage classes:
+
+### Manual Storage Class ��️
+Used primarily in local environments, referencing directories within the local machine.
+
+### AWS Services ☁️
+Such as EFS (Elastic File System) or EBS (Elastic Block Storage), which provide greater efficiency, high availability, and facilitate data backups and migrations.
+
+The relationship between these components follows a specific flow: a pod references a PVC, and this PVC links to a specific PV, all defined in the corresponding YAML files.
+
+## How to Implement PV and PVC in a Development Environment? ��️
+
+Let's go through a practical example using MiniKube as a local environment:
+
+### Step 1: Prepare Data on the Host ��️
+First, we need to create a file on the host that will be exposed to our pod:
+
+```bash
+sudo su
+cd /mnt/data
+echo "<h1>Hello from volume</h1>" > index.html
+cat index.html
+exit
+```
+
+### Step 2: Define the Persistent Volume (PV) 📄
+We create a YAML file to define our PV:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: myPV
+  labels:
+    app: nginx-storage
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: manual
+  hostPath:
+    path: /mnt/data
+```
+
+In this definition:
+- We specify a capacity of 1GB
+- Configure the access mode as ReadWriteOnce (only one pod can mount it)
+- Define the storage class as manual (for local environments)
+- Point to the `/mnt/data` directory where we created our HTML file
+
+### Step 3: Define the Persistent Volume Claim (PVC) 📋
+Now we create the PVC that will claim the previous PV:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myPVC
+spec:
+  selector:
+    matchLabels:
+      app: nginx-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual
+```
+
+Note that the PVC uses a selector with matchLabels to specifically link to the PV we created, matching the "app: nginx-storage" label.
+
+### Step 4: Create a Pod That Uses the PVC ��
+Finally, we define a pod that uses our PVC:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myPod
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      volumeMounts:
+        - mountPath: "/usr/share/nginx/html"
+          name: myvolume
+  volumes:
+    - name: myvolume
+      persistentVolumeClaim:
+        claimName: myPVC
+```
+
+This pod:
+- Uses the nginx image
+- Mounts the volume in the default path where nginx looks for HTML files
+- References the "myPVC" PVC we created earlier
+
+### Step 5: Apply the Configurations ⚡
+We apply the configurations in order:
+
+```bash
+kubectl apply -f pv-pvc.yaml
+kubectl apply -f pod.yaml
+```
+
+### Step 6: Verify the Configuration ✅
+We check that both PV and PVC are correctly established:
+
+```bash
+kubectl get pv,pvc
+kubectl describe pod myPod
+```
+
+### Step 7: Validate the Functioning 🔍
+To verify that everything works correctly:
+
+```bash
+kubectl exec myPod -- ls -la /usr/share/nginx/html
+kubectl port-forward myPod 8080:80
+```
+
+Now we can access localhost:8080 in our browser and should see the message "Hello from volume".
+
+## What are the Benefits of Using PV and PVC? 🎁
+
+The implementation of persistent storage through PV and PVC offers multiple advantages:
+
+### Data Persistence 💾
+Information survives even if pods restart or are deleted.
+
+### Storage Abstraction 🏗️
+Developers don't need to know the details of storage implementation.
+
+### Flexibility 🔄
+Allows changing the underlying storage without modifying the application.
+
+### Cost Savings 💰
+Especially in development environments, avoids having to maintain expensive external services.
+
+## Advanced PV and PVC Configurations 🚀
+
+### Dynamic Provisioning:
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-ssd
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp3
+  iops: "3000"
+  throughput: "125"
+```
+
+### PVC with Storage Class:
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fast-storage-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 10Gi
+```
+
+### StatefulSet with PVC:
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: "nginx"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "fast-ssd"
+      resources:
+        requests:
+          storage: 1Gi
+```
+
+## Access Modes and Their Use Cases ��
+
+### ReadWriteOnce (RWO) 📝
+- Only one node can mount the volume for reading and writing
+- Use case: Single pod applications, databases
+
+### ReadOnlyMany (ROX) 👀
+- Multiple nodes can mount the volume for reading only
+- Use case: Shared configuration files, static content
+
+### ReadWriteMany (RWM) 🔄
+- Multiple nodes can mount the volume for reading and writing
+- Use case: Shared file systems, collaborative applications
+
+## Storage Classes Comparison ��
+
+| Storage Class | Use Case | Performance | Cost | Availability |
+|---------------|----------|-------------|------|--------------|
+| **Standard** | General purpose | Medium | Low | High |
+| **SSD** | High performance | High | Medium | High |
+| **Local** | Ultra-low latency | Very High | Low | Low |
+| **Network** | Shared access | Medium | Medium | High |
+
+## Best Practices ��
+
+### For PV:
+- Use appropriate storage classes for your use case
+- Implement proper backup strategies
+- Monitor storage usage and performance
+- Use labels for organization
+
+### For PVC:
+- Request only the storage you need
+- Use appropriate access modes
+- Implement proper cleanup procedures
+- Monitor PVC status and events
+
+### Security Considerations:
+- Implement proper RBAC for storage access
+- Use encrypted storage for sensitive data
+- Monitor storage access logs
+- Regularly audit storage configurations
+
+## Troubleshooting Common Issues ��
+
+### PVC Pending:
+```bash
+# Check storage class
+kubectl get storageclass
+
+# Check PV availability
+kubectl get pv
+
+# Check events
+kubectl describe pvc <pvc-name>
+```
+
+### Volume Mount Issues:
+```bash
+# Check pod events
+kubectl describe pod <pod-name>
+
+# Check volume mounts
+kubectl exec -it <pod-name> -- df -h
+
+# Check volume permissions
+kubectl exec -it <pod-name> -- ls -la /mount/path
+```
+
+### Storage Performance Issues:
+```bash
+# Check storage metrics
+kubectl top pods
+
+# Monitor I/O performance
+kubectl exec -it <pod-name> -- iostat
+
+# Check storage class parameters
+kubectl describe storageclass <storage-class-name>
+```
+
+## Monitoring and Maintenance 📈
+
+### Storage Monitoring:
+```bash
+# Check PV and PVC status
+kubectl get pv,pvc --all-namespaces
+
+# Monitor storage usage
+kubectl exec -it <pod-name> -- du -sh /mount/path
+
+# Check storage events
+kubectl get events --field-selector involvedObject.kind=PersistentVolumeClaim
+```
+
+### Backup Strategies:
+- Implement regular snapshots
+- Use cloud provider backup services
+- Test restore procedures regularly
+- Document backup and recovery procedures
+
+## Conclusion 🎉
+
+In the era of artificial intelligence, information has become gold. Implementing PV and PVC correctly ensures that this valuable resource is protected and available for your applications in Kubernetes, avoiding the loss of critical data for your organization or your clients.
+
+The combination of PV and PVC provides a robust foundation for data persistence in Kubernetes, enabling applications to maintain state and survive pod lifecycle events. Mastering these concepts is essential for building reliable, scalable, and data-aware applications in the cloud-native world. 🌟
+
+Have you implemented persistent storage in your Kubernetes clusters? What challenges have you faced? Share your experience in the comments! 💬
+
+---
