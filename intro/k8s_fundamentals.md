@@ -1,8 +1,36 @@
 # Index 
 [![Home](https://img.shields.io/badge/Home-Readme-brightgreen?style=plastic)](https://github.com/DLesmes/k8s/blob/main/README.md)
 
-  *  
-  *    
+* [Introduction to Kubernetes](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#what-is-kubernetes-and-why-is-it-important-)
+* [What is Kubernetes and why is it important?](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#how-to-set-up-a-local-kubernetes-cluster-with-minikube-%EF%B8%8F)
+* [Set up a local cluster with Minikube](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#how-to-initialize-your-cluster-with-minikube-)
+* [Kubernetes Architecture: nodes, pods and key components](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#kubernetes-architecture-nodes-pods-and-key-components-%EF%B8%8F)
+* [Introduction to the Kubernetes API and Kubectl](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#introduction-to-kubernetes-api-and-kubectl-)
+* [Differences between declarative and imperative approaches](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#differences-between-declarative-and-imperative-approaches-)
+* [Kubernetes Objects and Resources](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#pods-replicasets-and-deployments-)
+* [Pods, ReplicaSets and Deployments](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#pods-replicasets-and-deployments-)
+* [Services and Ingress: Exposing applications](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#services-and-ingress-exposing-applications-)
+* [ConfigMaps and Secrets: Configuration and sensitive data](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#configmaps-and-secrets-configuration-and-sensitive-data-)
+* [Networking and Storage in Kubernetes]()
+* [Kubernetes Network Model: Pods and services](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#kubernetes-network-model-pods-and-services-)
+* [Service Types: ClusterIP, NodePort, LoadBalancer and ExternalName](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#service-types-clusterip-nodeport-loadbalancer-and-externalname-)
+* [Persistent Volumes (PV) and Persistent Volume Claims (PVC)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#persistent-volumes-pv-and-persistent-volume-claims-pvc-)
+* [DaemonSets and StatefulSets](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#daemonsets-and-statefulsets-specialized-workloads-in-kubernetes-)
+* [Workloads and Scaling]()
+* [Deploying a multi-tier application locally](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#deploying-a-multi-tier-application-locally-)
+* [Jobs and CronJobs: One-time and scheduled tasks](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#jobs-and-cronjobs-one-time-and-scheduled-tasks-)
+* [Application Scaling: HPA and VPA](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#application-scaling-hpa-and-vpa-)
+* [Application Scaling in Kubernetes](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#application-scaling-in-kubernetes-)
+* [Kubernetes in the Cloud]()
+* [Kubernetes Configuration in GKE (Google)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#kubernetes-configuration-in-gke-google-%EF%B8%8F)
+* [Kubernetes Configuration in AKS (Azure)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#kubernetes-configuration-in-aks-azure-%EF%B8%8F)
+* [Kubernetes Configuration in EKS (AWS)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#kubernetes-configuration-in-eks-aws-%EF%B8%8F)
+* [Deploying the Project in the AWS cloud (EKS)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#deploying-the-project-in-aws-cloud-eks-)
+* [Troubleshooting, Use Cases and K8s Certifications]()
+* [Troubleshooting in Kubernetes](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#troubleshooting-in-kubernetes-)
+* [Other Kubernetes use cases](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#other-use-cases-of-kubernetes-)
+* [Professional Certifications in K8s](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#professional-certifications-in-kubernetes-)
+
 ---
 [![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
