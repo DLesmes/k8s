@@ -4310,3 +4310,312 @@ These three scaling methods allow developers to create both resilient and effici
 The combination of horizontal, vertical, and cluster scaling provides a comprehensive approach to handling varying workloads in Kubernetes. Understanding when and how to use each scaling method is crucial for building robust, scalable, and cost-effective applications. 🌟
 
 Don't wait any longer to put them into practice! Start with simple configurations and gradually add complexity as you become more comfortable with the scaling mechanisms. 🚀
+
+---
+
+# Kubernetes Configuration in GKE (Google) ☁️
+
+## Summary 📋
+
+Cloud Kubernetes services represent a significant evolution in container management, offering advanced capabilities that facilitate application deployment and administration. Each cloud service provider has its particularities, advantages, and unique characteristics that can influence our decision when choosing a platform. In this content, we'll explore how to configure Google Kubernetes Engine (GKE), one of the most up-to-date providers in the Kubernetes ecosystem. ��
+
+## What is Google Kubernetes Engine and Why Use It? ��
+
+Google Kubernetes Engine is a managed Kubernetes service that allows you to deploy and manage containerized applications at scale on Google Cloud Platform (GCP) infrastructure. One of the main advantages of GKE is that it always has the latest versions of Kubernetes available, which is not surprising considering that Kubernetes was originally a Google initiative.
+
+Additionally, GKE offers:
+
+- **Support for advanced Kubernetes features** 🚀
+- **Automatic cluster updates** 🔄
+- **Integration with other Google Cloud services** 🔗
+- **Multiple storage and networking options** 💾
+
+To start working with GKE, we need to have a GCP account configured beforehand. If you're a new user, you'll likely receive free credits as part of the trial period that Google Cloud offers.
+
+## How to Configure Our First Cluster in GKE? 🛠️
+
+Before creating our Kubernetes cluster in GKE, we need to ensure we have the Google Cloud SDK installed and enable the necessary APIs. The main steps are:
+
+### Environment Setup ⚙️
+
+#### Install Google Cloud SDK (if you don't have it already installed):
+
+[Gcloud instalation guide](https://cloud.google.com/sdk/docs/install-sdk?hl=es-419#linux)
+
+```bash
+# For macOS
+curl https://sdk.cloud.google.com | bash
+exec -l $SHELL
+
+# For Windows
+# Download and install from https://cloud.google.com/sdk/docs/install
+```
+
+#### Authenticate with your Google account:
+```bash
+gcloud auth login
+```
+
+This command will open a window in your browser for you to select your Google account and grant the necessary permissions.
+
+#### Enable the required APIs:
+```bash
+gcloud services enable container.googleapis.com
+gcloud services enable compute.googleapis.com
+```
+
+These commands activate the containers API and compute API respectively, which are necessary for working with GKE.
+
+### Cluster Creation 🏗️
+
+Once our environment is configured, we can create our first Kubernetes cluster with the following command:
+
+```bash
+gcloud container clusters create k8s-course-demo --num-nodes=2
+```
+
+This command will create a cluster called "k8s-course-demo" with 2 nodes. The creation process can take between 15 and 20 minutes, during which Google Cloud will provision the necessary resources, configure the network, and deploy Kubernetes components.
+
+During creation, we can monitor progress from the Google Cloud console, in the Kubernetes Engine section, where we'll see information such as:
+
+- **Cluster status** 📊
+- **General configuration** ⚙️
+- **Installed Kubernetes version** 🔢
+- **Public and private endpoints** ��
+- **Nodes and node pools** 🖥️
+- **Available storage classes** 💾
+
+### Kubectl Configuration for Cluster Access 🔧
+
+After creating the cluster, we need to configure kubectl to interact with it. GKE requires an additional plugin for authentication:
+
+```bash
+gcloud components install gke-gcloud-auth-plugin
+```
+
+This plugin is necessary for kubectl to communicate with our cloud cluster.
+
+Once the plugin is installed, we can verify that we have access to the cluster:
+
+```bash
+kubectl config get-contexts
+```
+
+This command will show all available contexts, with an asterisk indicating the active context, which should be our newly created GKE cluster.
+
+## What Installed Components Can We Find in Our GKE Cluster? 🔍
+
+One of the advantages of using a managed service like GKE is that many essential components come pre-installed and configured. To see these components, we can execute:
+
+```bash
+kubectl get pods -n kube-system
+```
+
+Among the components installed by default, we'll find:
+
+- **FluentBit**: for log collection and processing 📝
+- **Google Kubernetes Engine metrics** 📊
+- **Container Storage Interface (CSI)**: for storage management 💾
+- **Metric Server**: for resource metrics 📈
+- **kube-proxy**: essential component of Kubernetes architecture ��
+- **CoreDNS**: for DNS resolution within the cluster 🔍
+- **Other system components** ⚙️
+
+## Advanced GKE Configurations 🚀
+
+### Regional Cluster:
+```bash
+gcloud container clusters create regional-cluster \
+    --region=us-central1 \
+    --num-nodes=3 \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=10
+```
+
+### Private Cluster:
+```bash
+gcloud container clusters create private-cluster \
+    --region=us-central1 \
+    --num-nodes=3 \
+    --enable-private-nodes \
+    --master-ipv4-cidr=172.16.0.0/28 \
+    --enable-ip-alias
+```
+
+### Cluster with Workload Identity:
+```bash
+gcloud container clusters create workload-identity-cluster \
+    --region=us-central1 \
+    --num-nodes=3 \
+    --workload-pool=my-project.svc.id.goog
+```
+
+## Working with Our Cluster 🎯
+
+With our cluster running, we can start creating namespaces and deploying applications:
+
+```bash
+kubectl create namespace platzi
+kubectl get namespaces
+```
+
+These commands create and then list the available namespaces, including the one we just created.
+
+## GKE-Specific Features 🌟
+
+### Node Pools Management:
+```bash
+# Create a new node pool
+gcloud container node-pools create high-mem-pool \
+    --cluster=k8s-course-demo \
+    --region=us-central1 \
+    --machine-type=e2-highmem-4 \
+    --num-nodes=2
+
+# Scale existing node pool
+gcloud container clusters resize k8s-course-demo \
+    --region=us-central1 \
+    --num-nodes=5
+```
+
+### Cluster Updates:
+```bash
+# Check available versions
+gcloud container get-server-config --region=us-central1
+
+# Upgrade cluster
+gcloud container clusters upgrade k8s-course-demo \
+    --region=us-central1 \
+    --master
+```
+
+### Monitoring and Logging:
+```bash
+# Enable monitoring
+gcloud container clusters update k8s-course-demo \
+    --region=us-central1 \
+    --enable-stackdriver-kubernetes
+
+# Enable logging
+gcloud container clusters update k8s-course-demo \
+    --region=us-central1 \
+    --enable-logging
+```
+
+## Best Practices for GKE 💡
+
+### Security:
+- Use **private clusters** for production
+- Enable **workload identity** for secure service access
+- Implement **network policies**
+- Use **binary authorization** for image security
+
+### Cost Optimization:
+- Use **spot instances** for non-critical workloads
+- Implement **node autoscaling**
+- Monitor **resource usage**
+- Use **preemptible nodes** for batch jobs
+
+### Performance:
+- Choose **appropriate machine types**
+- Use **regional clusters** for high availability
+- Implement **proper resource limits**
+- Monitor **cluster performance**
+
+## Troubleshooting Common Issues 🔧
+
+### Authentication Issues:
+```bash
+# Re-authenticate
+gcloud auth login
+
+# Update kubeconfig
+gcloud container clusters get-credentials k8s-course-demo --region=us-central1
+
+# Check plugin installation
+gcloud components list
+```
+
+### Cluster Access Issues:
+```bash
+# Check cluster status
+gcloud container clusters describe k8s-course-demo --region=us-central1
+
+# Check node status
+kubectl get nodes
+
+# Check system pods
+kubectl get pods -n kube-system
+```
+
+### Resource Issues:
+```bash
+# Check node resources
+kubectl describe nodes
+
+# Check pod resource usage
+kubectl top pods
+
+# Check cluster events
+kubectl get events --sort-by='.lastTimestamp'
+```
+
+## Cost Management 💰
+
+### Monitoring Costs:
+```bash
+# Check cluster costs
+gcloud billing accounts list
+
+# Set up billing alerts
+gcloud alpha billing budgets create \
+    --billing-account=XXXXXX-XXXXXX-XXXXXX \
+    --display-name="GKE Budget" \
+    --budget-amount=100USD
+```
+
+### Cost Optimization Commands:
+```bash
+# Use spot instances
+gcloud container node-pools create spot-pool \
+    --cluster=k8s-course-demo \
+    --spot
+
+# Enable autoscaling
+gcloud container clusters update k8s-course-demo \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=10
+```
+
+## Cleanup and Resource Management ��
+
+It's important to remember that if we're using the cluster only for testing, we should delete it when we're done to avoid unnecessary costs:
+
+```bash
+# Delete the cluster
+gcloud container clusters delete k8s-course-demo --region=us-central1
+
+# Delete associated resources
+gcloud compute disks list
+gcloud compute disks delete <disk-name> --zone=<zone>
+```
+
+## Comparison with Other Cloud Providers ��
+
+| Feature | GKE | EKS | AKS |
+|---------|-----|-----|-----|
+| **Kubernetes Version** | Latest | Lagged | Latest |
+| **Auto-updates** | ✅ | ❌ | ✅ |
+| **Workload Identity** | ✅ | ✅ | ✅ |
+| **Cost** | Medium | High | Low |
+| **Integration** | GCP Native | AWS Native | Azure Native |
+
+## Conclusion 🎉
+
+The Kubernetes ecosystem in the cloud offers multiple options, each with its specific characteristics. GKE stands out for its constant updates and support for the latest Kubernetes features, making it an excellent option for projects that require the most recent features.
+
+GKE provides a robust, scalable, and feature-rich platform for running Kubernetes workloads in the cloud. Its tight integration with Google Cloud services and commitment to staying current with Kubernetes releases makes it an attractive choice for organizations looking to leverage the full power of container orchestration. 🌟
+
+Have you tried other managed Kubernetes services? What factors do you consider important when choosing a cloud provider for your containerized applications? Share your experience in the comments! 💬
