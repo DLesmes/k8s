@@ -4602,16 +4602,6 @@ gcloud compute disks list
 gcloud compute disks delete <disk-name> --zone=<zone>
 ```
 
-## Comparison with Other Cloud Providers ��
-
-| Feature | GKE | EKS | AKS |
-|---------|-----|-----|-----|
-| **Kubernetes Version** | Latest | Lagged | Latest |
-| **Auto-updates** | ✅ | ❌ | ✅ |
-| **Workload Identity** | ✅ | ✅ | ✅ |
-| **Cost** | Medium | High | Low |
-| **Integration** | GCP Native | AWS Native | Azure Native |
-
 ## Conclusion 🎉
 
 The Kubernetes ecosystem in the cloud offers multiple options, each with its specific characteristics. GKE stands out for its constant updates and support for the latest Kubernetes features, making it an excellent option for projects that require the most recent features.
@@ -4619,3 +4609,380 @@ The Kubernetes ecosystem in the cloud offers multiple options, each with its spe
 GKE provides a robust, scalable, and feature-rich platform for running Kubernetes workloads in the cloud. Its tight integration with Google Cloud services and commitment to staying current with Kubernetes releases makes it an attractive choice for organizations looking to leverage the full power of container orchestration. 🌟
 
 Have you tried other managed Kubernetes services? What factors do you consider important when choosing a cloud provider for your containerized applications? Share your experience in the comments! 💬
+
+---
+
+# Kubernetes Configuration in AKS (Azure) ☁️
+
+## Summary ��
+
+Cloud application deployment has become an indispensable skill in the current DevOps ecosystem. Mastering platforms like Azure Kubernetes Service (AKS) not only allows you to optimize your workflows but also positions you competitively in the job market. We'll explore step by step how to create and configure a Kubernetes cluster in Azure, one of the most in-demand solutions by companies seeking cloud infrastructure professionals. 🎯
+
+## Why is AKS Important in the DevOps Ecosystem? 🚀
+
+Azure Kubernetes Service is a managed Kubernetes solution that significantly simplifies the deployment and management of containerized applications. One of the most notable advantages of AKS is its native integration with Azure DevOps, allowing complete automation of the flow from development to production.
+
+Organizations increasingly seek professionals who master these technologies because they:
+
+- **Facilitate the implementation of continuous integration practices** 🔄
+- **Allow infrastructure management as code** 📝
+- **Offer native scalability and high availability** ��
+- **Simplify microservices management** ��️
+
+Like GCP and AWS, Azure offers its own Kubernetes service, but with particularities that make it unique in the market.
+
+## How to Create a Kubernetes Cluster in Azure? 🛠️
+
+### Prerequisites 📋
+
+Before starting with cluster creation, we need:
+
+- **Azure account configured** 💳
+- **Azure CLI installed on our local machine** 💻
+- **Kubectl installed as an add-on** ��
+
+To verify that we have the Azure CLI correctly installed, we execute:
+
+```bash
+az --version
+```
+
+If it's necessary to install the kubectl add-on for Azure, we use:
+
+```bash
+az aks install-cli
+```
+
+### Login and Initial Configuration ��
+
+The first step is to authenticate our local CLI with Azure:
+
+```bash
+az login
+```
+
+This command will open a browser window where we must log in with our Azure account. Once authenticated, we must select the subscription with which we want to work.
+
+It's important to remember that we need an active subscription with a payment method configured, although Azure offers a free tier for new users.
+
+### Resource Group Creation 📁
+
+In Azure, all resources must be associated with a resource group, which serves as a logical container. To create one:
+
+```bash
+az group create --name K8sCourseAksDemo --location eastus
+```
+
+This group will allow us to centrally manage:
+
+- **Billing of our services** 💰
+- **Security policies** 🔒
+- **Resource monitoring** 📊
+- **Shared configurations** ⚙️
+
+### Kubernetes Cluster Creation 🏗️
+
+Now we can create our AKS cluster using the resource group:
+
+```bash
+az aks create --resource-group K8sCourseAksDemo --name K8sCourseAksDemo \
+              --node-count 3 --enable-addons monitoring --generate-ssh-keys \
+              --node-vm-size Standard_DS2_v3
+```
+
+The key parameters we must understand are:
+
+- `--node-count`: specifies how many nodes (virtual machines) our cluster will have
+- `--enable-addons monitoring`: activates cluster monitoring
+- `--generate-ssh-keys`: creates SSH keys to connect to nodes
+- `--node-vm-size`: defines the type of virtual machine to use
+
+During this process, we may face some common errors:
+
+#### Service Providers Not Registered:
+```bash
+az provider register --namespace Microsoft.OperationsManagement
+az provider register --namespace Microsoft.ContainerService
+```
+
+#### VM Sizes Not Available:
+We must specify a VM size compatible with our subscription and region.
+
+## How to Connect Local Kubectl with Our AKS Cluster? 🔗
+
+Once the cluster is created (a process that can take 15-20 minutes), we need to configure kubectl to communicate with it:
+
+```bash
+az aks get-credentials --resource-group K8sCourseAksDemo --name K8sCourseAksDemo
+```
+
+This command automatically adds the necessary configuration to our kubeconfig file. To verify that we have access to the cluster:
+
+```bash
+kubectl get nodes
+```
+
+We should see three nodes in "Ready" state. We can also explore system components:
+
+```bash
+kubectl get pods -n kube-system
+```
+
+This will show essential components such as:
+
+- **CoreDNS for internal DNS resolution** 🔍
+- **Azure CNI for networking** 🌐
+- **Metrics and monitoring** 📊
+- **Storage components (CSI)** 💾
+
+## Advanced AKS Configurations 🚀
+
+### Regional Cluster with Multiple Node Pools:
+```bash
+# Create cluster with multiple node pools
+az aks create \
+    --resource-group K8sCourseAksDemo \
+    --name K8sCourseAksDemo \
+    --node-count 3 \
+    --enable-addons monitoring \
+    --generate-ssh-keys \
+    --node-vm-size Standard_DS2_v3 \
+    --location eastus \
+    --enable-cluster-autoscaler \
+    --min-count 1 \
+    --max-count 10
+
+# Add additional node pool
+az aks nodepool add \
+    --resource-group K8sCourseAksDemo \
+    --cluster-name K8sCourseAksDemo \
+    --name highmempool \
+    --node-count 2 \
+    --node-vm-size Standard_E4s_v3 \
+    --enable-cluster-autoscaler \
+    --min-count 1 \
+    --max-count 5
+```
+
+### Private Cluster:
+```bash
+az aks create \
+    --resource-group K8sCourseAksDemo \
+    --name private-cluster \
+    --node-count 3 \
+    --enable-private-cluster \
+    --private-dns-zone /subscriptions/<subscription-id>/resourceGroups/K8sCourseAksDemo/providers/Microsoft.Network/privateDnsZones/privatelink.eastus.azmk8s.io
+```
+
+### Cluster with Workload Identity:
+```bash
+az aks create \
+    --resource-group K8sCourseAksDemo \
+    --name workload-identity-cluster \
+    --node-count 3 \
+    --enable-oidc-issuer \
+    --enable-workload-identity
+```
+
+## Resource Creation in Our Cluster 🎯
+
+Already with the connection established, we can create resources like namespaces:
+
+```bash
+kubectl create namespace platzi-aks
+```
+
+And from here we could start deploying our applications, following the same principles we've applied locally.
+
+## AKS-Specific Features 🌟
+
+### Azure Container Registry Integration:
+```bash
+# Create ACR
+az acr create --resource-group K8sCourseAksDemo --name myacr --sku Basic
+
+# Attach ACR to AKS
+az aks update \
+    --resource-group K8sCourseAksDemo \
+    --name K8sCourseAksDemo \
+    --attach-acr myacr
+```
+
+### Azure Monitor Integration:
+```bash
+# Enable Azure Monitor
+az aks enable-addons \
+    --resource-group K8sCourseAksDemo \
+    --name K8sCourseAksDemo \
+    --addons monitoring
+
+# Check monitoring status
+az aks show \
+    --resource-group K8sCourseAksDemo \
+    --name K8sCourseAksDemo \
+    --query addonProfiles.omsagent
+```
+
+### Network Policy:
+```bash
+# Enable network policy
+az aks create \
+    --resource-group K8sCourseAksDemo \
+    --name network-policy-cluster \
+    --node-count 3 \
+    --network-policy azure
+```
+
+## Best Practices for AKS 💡
+
+### Security:
+- Use **private clusters** for production
+- Enable **Azure AD integration**
+- Implement **network policies**
+- Use **pod security standards**
+
+### Cost Optimization:
+- Use **spot instances** for non-critical workloads
+- Implement **cluster autoscaler**
+- Monitor **resource usage**
+- Use **appropriate VM sizes**
+
+### Performance:
+- Choose **appropriate regions**
+- Use **availability zones**
+- Implement **proper resource limits**
+- Monitor **cluster performance**
+
+## Troubleshooting Common Issues 🔧
+
+### Authentication Issues:
+```bash
+# Re-authenticate
+az login
+
+# Check subscription
+az account show
+
+# Set subscription
+az account set --subscription <subscription-id>
+```
+
+### Cluster Access Issues:
+```bash
+# Get cluster credentials
+az aks get-credentials --resource-group K8sCourseAksDemo --name K8sCourseAksDemo
+
+# Check cluster status
+az aks show --resource-group K8sCourseAksDemo --name K8sCourseAksDemo
+
+# Check node status
+kubectl get nodes
+```
+
+### Resource Issues:
+```bash
+# Check resource group
+az group show --name K8sCourseAksDemo
+
+# Check VM sizes in region
+az vm list-sizes --location eastus --output table
+
+# Check provider registration
+az provider list --query "[?namespace=='Microsoft.ContainerService']"
+```
+
+## Monitoring and Observability ��
+
+### Azure Monitor Setup:
+```bash
+# Enable monitoring
+az aks enable-addons \
+    --resource-group K8sCourseAksDemo \
+    --name K8sCourseAksDemo \
+    --addons monitoring
+
+# Check monitoring workspace
+az monitor log-analytics workspace show \
+    --resource-group K8sCourseAksDemo \
+    --workspace-name <workspace-name>
+```
+
+### Log Analytics Queries:
+```kusto
+// Container logs
+ContainerLog
+| where TimeGenerated > ago(1h)
+| where ContainerName == "myapp"
+
+// Node metrics
+Perf
+| where ObjectName == "K8SNode"
+| where CounterName == "cpuUsageNanoCores"
+```
+
+## Cost Management 💰
+
+### Cost Monitoring:
+```bash
+# Check resource costs
+az consumption usage list --start-date 2024-01-01 --end-date 2024-01-31
+
+# Set up budget alerts
+az monitor action-group create \
+    --resource-group K8sCourseAksDemo \
+    --name budget-alerts \
+    --short-name budget
+```
+
+### Cost Optimization:
+```bash
+# Use spot instances
+az aks nodepool add \
+    --resource-group K8sCourseAksDemo \
+    --cluster-name K8sCourseAksDemo \
+    --name spotpool \
+    --node-count 2 \
+    --priority Spot \
+    --eviction-policy Delete
+
+# Enable autoscaler
+az aks update \
+    --resource-group K8sCourseAksDemo \
+    --name K8sCourseAksDemo \
+    --enable-cluster-autoscaler \
+    --min-count 1 \
+    --max-count 10
+```
+
+## Comparison with Other Cloud Providers ☁️
+
+| Feature | AKS | GKE | EKS |
+|---------|-----|-----|-----|
+| **Kubernetes Version** | Latest | Latest | Lagged |
+| **Auto-updates** | ✅ | ✅ | ❌ |
+| **Workload Identity** | ✅ | ✅ | ✅ |
+| **Cost** | Low | Medium | High |
+| **Integration** | Azure Native | GCP Native | AWS Native |
+
+## Cleanup and Resource Management 🧹
+
+```bash
+# Delete the cluster
+az aks delete --resource-group K8sCourseAksDemo --name K8sCourseAksDemo
+
+# Delete resource group
+az group delete --name K8sCourseAksDemo --yes
+
+# Check remaining resources
+az resource list --resource-group K8sCourseAksDemo
+```
+
+## Conclusion 🎉
+
+It's interesting to note that, unlike local installations, in AKS the control plane is managed directly by Azure through the Cloud Controller Manager, which frees us from that responsibility.
+
+Exploring Kubernetes in different cloud providers allows us to better understand the particularities of each one, preparing us to make informed decisions according to the specific requirements of our projects. Knowledge of these platforms has become indispensable for any DevOps professional in the current market.
+
+AKS provides a robust, cost-effective, and well-integrated platform for running Kubernetes workloads in Azure. Its tight integration with Azure services and commitment to staying current with Kubernetes releases makes it an excellent choice for organizations invested in the Microsoft ecosystem. 🌟
+
+Have you worked with other cloud providers? What advantages or disadvantages have you found in AKS compared to them? Share your experience in the comments! 💬
