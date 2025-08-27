@@ -5251,3 +5251,112 @@ spec:
 By ensuring each of these steps, you'll be able to deploy robust and flexible applications in Kubernetes, supporting any business to achieve the desired scale and efficiency. Keep exploring and adapting new practices to continue improving! 💪
 
 ---
+
+# Troubleshooting in Kubernetes 🔧
+
+## Summary 📋
+
+How to solve common errors in Kubernetes? Working with Kubernetes in production and development environments can be complicated due to its complex architecture. However, using debugging tools and metrics, it's possible to efficiently solve problems that may arise when managing clusters. Below, we'll explore how to resolve some of the most common errors in Kubernetes through a series of practical exercises. 🎯
+
+## How to Identify Errors in Pods? 🔍
+
+To detect errors in pods, we must use appropriate kubectl commands. For example, the `kubectl describe pod` command provides detailed information about the pod's state, including problems related to images and secrets.
+
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+### Image Download Errors 🖼️
+The `image pull backoff` error indicates that the image cannot be downloaded, probably because the tag is incorrect. Verify if the image and its version are in the registry.
+
+### Configuration Errors ⚙️
+If the pod cannot start the container correctly, review the associated secrets and configmaps. Use the `kubectl get secret` command to verify secret names in the namespace.
+
+## How to Solve Memory and CPU Problems? ��
+
+A common error in clusters is OOM kills or memory shortage errors. It's fundamental to properly allocate resources and leave margin for pod scaling.
+
+```yaml
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "50m"
+  limits:
+    memory: "512Mi"
+    cpu: "100m"
+```
+
+Adjust these configurations to avoid constant container restarts due to resource shortages.
+
+## How to Ensure Database Connectivity? 🔗
+
+To connect a pod with a database, ensure that the instance's security group allows traffic from the cluster's node group. Modify this configuration in the database management console.
+
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+Use `kubectl exec` to access the container's terminal and validate the connection with the MySQL client command.
+
+## Strategies for Debugging Applications 🐛
+
+### Logs and Events 📝
+Review pod logs using `kubectl logs` to get details of recent events:
+
+```bash
+kubectl logs <pod-name> -n <namespace>
+```
+
+### Automation 🤖
+Employ tools that automate error identification. This reduces manual efforts and increases operational efficiency.
+
+### Service Validation ✅
+Check service exposure through URLs and verify expected responses or empty sections.
+
+```bash
+kubectl exec -it <pod-name> -n <namespace> -- /bin/sh
+```
+
+## Successful Execution After Corrections ✅
+
+After making adjustments and checking logs, verify that the application reaches a successful running state. Check the pods again and ensure that previous errors have been corrected.
+
+## Best Practices for Troubleshooting 🎯
+
+### 1. Check Pod Status 📊
+```bash
+kubectl get pods -n <namespace>
+kubectl get events -n <namespace>
+```
+
+### 2. Verify Resource Usage 📈
+```bash
+kubectl top pods -n <namespace>
+kubectl top nodes
+```
+
+### 3. Inspect Service Configuration 🌐
+```bash
+kubectl get services -n <namespace>
+kubectl describe service <service-name> -n <namespace>
+```
+
+### 4. Check Network Connectivity 🌍
+```bash
+kubectl run test-pod --image=busybox --rm -it --restart=Never -- nslookup <service-name>
+```
+
+## Common Error Patterns and Solutions 🔧
+
+| Error Type | Symptoms | Solution |
+|------------|----------|----------|
+| ImagePullBackOff | Pod stuck in pending | Check image name and registry access |
+| CrashLoopBackOff | Pod restarts repeatedly | Check application logs and resource limits |
+| OOMKilled | Pod terminated | Increase memory limits or optimize application |
+| Pending | Pod not scheduled | Check node resources and taints/tolerations |
+
+## Conclusion 🎯
+
+This meticulous approach to debugging problems in the Kubernetes cluster will provide you with the tools and knowledge necessary to handle production environments competently. Continue learning and experimenting with various cases to strengthen your skills and ensure successful deployment in the future. The world of Kubernetes is vast and full of opportunities for continuous improvement! 💪
+
+---
