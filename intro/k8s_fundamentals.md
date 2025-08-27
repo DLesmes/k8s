@@ -1,9 +1,8 @@
 # Index 
 [![Home](https://img.shields.io/badge/Home-Readme-brightgreen?style=plastic)](https://github.com/DLesmes/k8s/blob/main/README.md)
 
-* [Introduction to Kubernetes](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#what-is-kubernetes-and-why-is-it-important-)
-* [What is Kubernetes and why is it important?](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#how-to-set-up-a-local-kubernetes-cluster-with-minikube-%EF%B8%8F)
-* [Set up a local cluster with Minikube](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#how-to-initialize-your-cluster-with-minikube-)
+* [What is Kubernetes and why is it important?](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#what-is-kubernetes-and-why-is-it-important-)
+* [Set up a local cluster with Minikube](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#how-to-set-up-a-local-kubernetes-cluster-with-minikube-%EF%B8%8F)
 * [Kubernetes Architecture: nodes, pods and key components](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#kubernetes-architecture-nodes-pods-and-key-components-%EF%B8%8F)
 * [Introduction to the Kubernetes API and Kubectl](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#introduction-to-kubernetes-api-and-kubectl-)
 * [Differences between declarative and imperative approaches](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#differences-between-declarative-and-imperative-approaches-)
