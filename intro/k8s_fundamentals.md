@@ -5360,3 +5360,185 @@ kubectl run test-pod --image=busybox --rm -it --restart=Never -- nslookup <servi
 This meticulous approach to debugging problems in the Kubernetes cluster will provide you with the tools and knowledge necessary to handle production environments competently. Continue learning and experimenting with various cases to strengthen your skills and ensure successful deployment in the future. The world of Kubernetes is vast and full of opportunities for continuous improvement! 💪
 
 ---
+
+# Other Use Cases of Kubernetes 🚀
+
+## Summary 📋
+
+The integration of Large Language Models (LLM) with Kubernetes represents one of the most important trends in modern artificial intelligence deployment. Models like ChatGPT and other popular services often operate on Kubernetes cluster-based infrastructures, enabling efficient management of intensive computational resources and unprecedented scalability. 🧠
+
+## How Do LLM Models Run in Modern Cloud Architecture? ☁️
+
+The current Internet and cloud architecture is extremely complex, composed of multiple interconnected layers. In this structure we find:
+
+### The Cloud Layer ☁️
+Where major cloud providers like AWS, GCP, and Azure reside, where we can create Kubernetes clusters.
+
+### The Edge Layer 🌐
+Servers strategically located close to end users, like AWS Lambda Edge, that reduce request latency.
+
+### The Device Layer 📱
+Where end users interact through different technologies.
+
+This multi-layer architecture offers significant advantages:
+
+- **Reduced communication latency** ⚡
+- **Greater application portability** 🔄
+- **Centralized resource management** through tools like kubectl 🛠️
+- **Direct and improved impact** on end-user experience ��
+
+## What Use Cases Benefit from Edge Servers with Kubernetes? 🏁
+
+Edge servers, being closer to the end user, are particularly useful for:
+
+### Autonomous Vehicles 🚗
+Require real-time processing with minimal latency
+
+### IoT Devices ��
+Such as monitoring systems on farms or smart meters
+
+### Retail and Commerce 🛒
+In smart stores like Amazon's
+
+For these scenarios, specialized tools exist like KubeEdge (lightweight version of Kubernetes) and K3S (compatible with Linux, even on devices like Raspberry Pi).
+
+## How Are Resources Optimized for Artificial Intelligence in Kubernetes? 🤖
+
+To enhance the use of containers and Kubernetes in AI and machine learning applications, we have specialized tools:
+
+### Kubeflow ��
+Platform dedicated to ML workflows in Kubernetes
+
+### Nvidia GPU Operator 🎮
+For efficient GPU management
+
+### Argo Workflows ⚙️
+For automating complex processes
+
+These solutions provide key benefits:
+
+- **Efficient resource management**: Especially GPUs, crucial for AI models
+- **Greater scalability**: Allowing LLM training in optimal times
+- **Improved automation**: Through unified interfaces like kubectl
+
+## What Use Cases Are Possible with These Tools? 🎯
+
+With this infrastructure, we can:
+
+- Train and deploy models within the same ecosystem
+- Generate real-time inferences
+- Create complete machine learning pipelines with tools like Kubeflow
+- Deploy applications directly in the cloud
+
+## How to Implement an LLM Model in a Kubernetes Cluster? 🧠
+
+Let's walk through the process of deploying a DeepSig model directly in Minikube, using the following components:
+
+### Unoptimized Server Deployment 🔧
+Basic configuration for environments without specialized hardware
+
+### Optimized Server Deployment ⚡
+Advanced configuration for environments with GPUs
+
+### User Interface Deployment 🖥️
+For interacting with the deployed model
+
+## Implementing an Unoptimized Server 📦
+
+The unoptimized deployment includes:
+
+```yaml
+# Main resources
+- PersistentVolumeClaim: 3GB space
+- Deployment:
+  - Image: ollama:latest
+  - Resources: 
+    - CPU: 1-2 (request-limits)
+    - Memory: 2-4GB (request-limits)
+  - Exposed port for communication
+```
+
+## Leveraging GPU Resources with Optimized Configuration 🎮
+
+The main difference in the optimized deployment is the configuration for specialized hardware:
+
+```yaml
+# GPU-specific configurations
+- nodeAffinity:
+  - Requires: 
+    - hardware-type: GPU
+    - gpu-type: NVIDIA-A100
+    - gpus-count: >2
+- tolerations:
+  - Don't schedule on nodes without GPU
+- resources:
+  - nvidia.com/gpu: 1-2 (request-limits)
+```
+
+The combination of affinity and tolerations ensures that pods requiring GPU are placed on nodes where these resources are available, while pods without these requirements are repelled from such nodes.
+
+## Deploying the User Interface ��️
+
+The interface is configured with:
+
+```yaml
+- Deployment:
+  - Image: ollama-webui
+  - Port: 8080
+  - Environment variable pointing to model API
+- Service and Ingress: For browser access
+```
+
+It's necessary to configure the `/etc/hosts` file to add the corresponding entry to the domain configured in the Ingress (in this case `running.deepsig.local`).
+
+## Practical Implementation Steps 🛠️
+
+### 1. Create Namespace 📁
+```bash
+kubectl create namespace llm-demo
+```
+
+### 2. Deploy Model Server 🚀
+```bash
+kubectl apply -f model-deployment.yaml
+```
+
+### 3. Deploy Web Interface 🌐
+```bash
+kubectl apply -f webui-deployment.yaml
+```
+
+### 4. Configure Ingress 🌍
+```bash
+kubectl apply -f ingress.yaml
+```
+
+## Monitoring and Management 📊
+
+With all these components deployed, we can:
+
+- Make direct queries to the API through curl requests
+- Access the graphical interface through the Ingress
+- Monitor pod logs to see the model's chain of thought
+
+## Advanced Use Cases 🎯
+
+### 1. Multi-Model Deployment ��
+Deploy multiple LLM models on the same cluster
+
+### 2. Auto-Scaling Based on Demand 📈
+Configure HPA for LLM inference workloads
+
+### 3. Model Versioning 🔄
+Implement A/B testing for different model versions
+
+### 4. Cost Optimization ��
+Use spot instances for training workloads
+
+## Conclusion ��
+
+Understanding how to implement LLM models in Kubernetes opens a range of possibilities for personal or business projects, allowing you to deploy and scale artificial intelligence models with relative ease, leveraging the full power of container orchestration.
+
+The potential for creating customized solutions is enormous, from corporate chatbots to automated data analysis systems. We'd love to know what applications you'd like to implement with this infrastructure! 💪
+
+---
