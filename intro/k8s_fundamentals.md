@@ -184,6 +184,11 @@ Then, verify the status of your pods with:
 kubectl get pods
 ```
 
+You can try also a cloud image from google for sure
+
+```bash
+kubectl run hello-cloud --image=gcr.io/google-samples/hello-app:2.0 --restart=Never  --port=8080
+```
 ## How to Use the Kubernetes Dashboard? 📊
 
 MiniKube allows you to interact with Kubernetes through a web dashboard. You can access it with the following command:
