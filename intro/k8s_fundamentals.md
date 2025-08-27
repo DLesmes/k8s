@@ -1,3 +1,10 @@
+# Index 
+[![Home](https://img.shields.io/badge/Home-Readme-brightgreen?style=plastic)](https://github.com/DLesmes/k8s/blob/main/README.md)
+
+  *  
+  *    
+
+
 # What is Kubernetes and why is it important? 🚀
 
 ### What is Kubernetes and why is it essential? 🤔
