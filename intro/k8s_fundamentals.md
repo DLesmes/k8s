@@ -3,7 +3,8 @@
 
   *  
   *    
-
+---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # What is Kubernetes and why is it important? 🚀
 
@@ -44,6 +45,7 @@ A crucial part of learning with Kubernetes is learning to troubleshoot like a tr
 As you dive into the Kubernetes universe, you'll discover that it's not just a tool. It's the conductor that transforms infrastructure management into a perfect symphony. This course is your opportunity to nurture your skills in infrastructure, development, and the cloud and elevate them to a solid and advanced professional level. Join us and start becoming a master orchestrator of the technological world! 🌟
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # How to Set Up a Local Kubernetes Cluster with MiniKube? 🛠️
 
@@ -177,6 +179,7 @@ For more detailed information and official documentation, check out these resour
 It's impressive how tools like MiniKube and KubeCtl can simplify learning and experimenting with Kubernetes. Don't stop here; continue exploring, practicing, and developing your skills to be prepared for real production environments. The journey to becoming a Kubernetes expert starts with these fundamental tools! 🌟
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Kubernetes Architecture: Nodes, Pods, and Key Components 🏗️
 
@@ -272,6 +275,7 @@ Kubernetes architecture represents an elegant solution to modern computing chall
 Have you implemented Kubernetes in your organization? What other aspects of its architecture would you like to explore? Share your experience and continue your journey toward mastering this powerful container orchestration platform! 🚀
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Introduction to Kubernetes API and Kubectl 🎮
 
@@ -439,6 +443,7 @@ Continue exploring and learn more about deploying frontend and backend applicati
 Remember, the key to mastering Kubernetes lies in understanding both the theoretical concepts and practical implementation. Keep practicing with these commands and gradually build more complex deployments as you become more comfortable with the platform. 🌟
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Differences Between Declarative and Imperative Approaches 🎯
 
@@ -595,6 +600,7 @@ The choice between imperative and declarative approaches depends on your specifi
 Have you worked with Kubernetes using either of these approaches? Which do you prefer and why? Share your experience and explore how you can improve your implementations by combining both methodologies! 🚀
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Pods, ReplicaSets, and Deployments 📦
 
@@ -852,6 +858,7 @@ Remember:
 Continue exploring and practicing with these concepts to build your confidence in managing Kubernetes applications! 🚀
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Services and Ingress: Exposing Applications 🌐
 
@@ -1100,6 +1107,7 @@ I invite you to experiment by creating your own deployment with a different name
 Remember that mastering Services and Ingress is essential for building production-ready applications in Kubernetes, as they form the foundation of how your applications communicate with the outside world. 🌐
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # ConfigMaps and Secrets: Configuration and Sensitive Data 🔐
 
@@ -1389,6 +1397,7 @@ Proper management of configurations and secrets is fundamental for maintaining s
 Remember that security is not just about protecting data, but also about implementing proper practices and using the right tools for each scenario. Start with ConfigMaps and Secrets, then evolve to more sophisticated solutions as your security requirements grow! 🔐
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Kubernetes Network Model: Pods and Services 🌐
 
@@ -1676,6 +1685,7 @@ The Kubernetes network model is the backbone that enables all the sophisticated 
 Have you experienced any situation where knowledge of the Kubernetes network model helped you solve a problem? Do you know what the default maximum capacity is in the Kubernetes network layer? Share your experiences in the comments! 💬
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Service Types: ClusterIP, NodePort, LoadBalancer, and ExternalName 🌐
 
@@ -2065,6 +2075,7 @@ Remember that choosing the right service type depends on your specific requireme
 Mastering these service types will help you build robust, scalable, and maintainable applications in Kubernetes! 🚀
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Persistent Volumes (PV) and Persistent Volume Claims (PVC) 💾
 
@@ -2419,6 +2430,7 @@ The combination of PV and PVC provides a robust foundation for data persistence 
 Have you implemented persistent storage in your Kubernetes clusters? What challenges have you faced? Share your experience in the comments! 💬
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # DaemonSets and StatefulSets: Specialized Workloads in Kubernetes 🚀
 
@@ -2652,6 +2664,7 @@ spec:
   - port: 80
     targetPort: 80
 ---
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -2742,6 +2755,7 @@ Understanding when and how to use DaemonSets and StatefulSets is crucial for bui
 Have you used DaemonSets or StatefulSets in your projects? What other use cases do you think would be suitable for these objects? Share your experience in the comments! 💬
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Deploying a Multi-Tier Application Locally 🚀
 
@@ -3224,6 +3238,7 @@ The multi-tier application deployment demonstrates the power of Kubernetes in ma
 Remember that practice is key to mastering Kubernetes deployments. Start with simple applications and gradually add complexity as you become more comfortable with the platform! 🚀
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Jobs and CronJobs: One-time and Scheduled Tasks ⏰
 
@@ -3644,6 +3659,7 @@ These objects provide the foundation for building robust, automated workflows in
 What periodic or ephemeral tasks could you automate in your infrastructure using these objects? Share your ideas and experiences in the comments! 💬
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Application Scaling: HPA and VPA 📈
 
@@ -3964,6 +3980,7 @@ HPA and VPA represent powerful tools for achieving optimal resource utilization 
 Have you implemented any scaling strategies in your applications? Share your experience and lessons learned in the comments section! 💬
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Application Scaling in Kubernetes 📈
 
@@ -4319,6 +4336,7 @@ The combination of horizontal, vertical, and cluster scaling provides a comprehe
 Don't wait any longer to put them into practice! Start with simple configurations and gradually add complexity as you become more comfortable with the scaling mechanisms. 🚀
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Kubernetes Configuration in GKE (Google) ☁️
 
@@ -4618,6 +4636,7 @@ GKE provides a robust, scalable, and feature-rich platform for running Kubernete
 Have you tried other managed Kubernetes services? What factors do you consider important when choosing a cloud provider for your containerized applications? Share your experience in the comments! 💬
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Kubernetes Configuration in AKS (Azure) ☁️
 
@@ -4995,6 +5014,7 @@ AKS provides a robust, cost-effective, and well-integrated platform for running 
 Have you worked with other cloud providers? What advantages or disadvantages have you found in AKS compared to them? Share your experience in the comments! 💬
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Kubernetes Configuration in EKS (AWS) ☁️
 
@@ -5104,6 +5124,7 @@ For detailed installation instructions and kubectl setup, refer to the [official
 And there you have it! EKSCTL not only simplifies Kubernetes cluster management in AWS but also integrates DevOps practices to take your applications to a reliable production environment. Don't forget to explore how you could apply this knowledge to other cloud providers. Keep learning and sharing your experiences, together we continue growing in the world of cloud software development! 💪
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Deploying the Project in AWS Cloud (EKS) 🚀
 
@@ -5258,6 +5279,7 @@ spec:
 By ensuring each of these steps, you'll be able to deploy robust and flexible applications in Kubernetes, supporting any business to achieve the desired scale and efficiency. Keep exploring and adapting new practices to continue improving! 💪
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Troubleshooting in Kubernetes 🔧
 
@@ -5367,6 +5389,7 @@ kubectl run test-pod --image=busybox --rm -it --restart=Never -- nslookup <servi
 This meticulous approach to debugging problems in the Kubernetes cluster will provide you with the tools and knowledge necessary to handle production environments competently. Continue learning and experimenting with various cases to strengthen your skills and ensure successful deployment in the future. The world of Kubernetes is vast and full of opportunities for continuous improvement! 💪
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Other Use Cases of Kubernetes 🚀
 
@@ -5549,6 +5572,7 @@ Understanding how to implement LLM models in Kubernetes opens a range of possibi
 The potential for creating customized solutions is enormous, from corporate chatbots to automated data analysis systems. We'd love to know what applications you'd like to implement with this infrastructure! 💪
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
 
 # Professional Certifications in Kubernetes 🏆
 
@@ -5685,3 +5709,4 @@ These resources offer practice and deepening opportunities that are key for thos
 As always, we encourage you to continue exploring and finding more resources that complement your knowledge. Continuous learning is vital in the dynamic world of technology. Do you have any other valuable resources you'd like to share with the community? Collaboration strengthens us all! 💪
 
 ---
+[![Index](https://img.shields.io/badge/Index-up-blue?style=plastic)](https://github.com/DLesmes/k8s/blob/main/intro/k8s_fundamentals.md#index)
