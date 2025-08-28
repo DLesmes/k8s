@@ -5562,7 +5562,7 @@ kubectl create namespace deepseek
 
 ### 2. Deploy Model Server 🚀
 ```bash
-kubectl apply -f model-deployment.yaml
+kubectl apply -f server-deployment.yaml
 ```
 
 ### 3. Deploy Web Interface 🌐
