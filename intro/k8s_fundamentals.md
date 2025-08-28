@@ -5557,7 +5557,7 @@ It's necessary to configure the `/etc/hosts` file to add the corresponding entry
 
 ### 1. Create Namespace 📁
 ```bash
-kubectl create namespace llm-demo
+kubectl create namespace deepseek
 ```
 
 ### 2. Deploy Model Server 🚀
